@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cookierace.io</title>
+    <link rel="stylesheet" href="static/styles/index.css">
+</head>
+<body>
+    <div class="cookierace-logo">
+        <code>[ cookierace.io ]</code>
+    </div>
+
+    <div class="cookierace-content">
+        <!-- <div class="cookierace-cookie-button" onclick="ClickButton();">
+            <img src="/assets/cookie.png">
+        </div>
+
+        <a id="cookierace-click-count" class="cookierace-click-count">0</a> -->
+        <!-- <code id="cookierace-waiting-message">Waiting for players...</code> -->
+    </div>
+</body>
+
+
+<script type="text/javascript">
+
+    let count = 0;
+    let ws = new WebSocket("ws://127.0.0.1:8081");
+    
+    ws.onopen = (event) => {
+        ws.send(JSON.stringify({"event":"queue"}));
+    };
+
+    ws.onmessage = (event) => {
+        let json = JSON.parse(event.data);
+
+        switch (json['event']) {
+            case 'connected':
+                Page_LoadGameScreen();
+                break;
+            case 'you_win':
+            case 'you_lost':
+                let cookie_button = document.getElementById("cookierace-cookie-button");
+                cookie_button.onclick = (e) => {};
+
+                let code_msg_elem = document.getElementById('cookierace-msg');
+                code_msg_elem.innerText = json['event'] == 'you_win' ? "You Won!" : "You lost :(";
+                code_msg_elem.style.color =  json['event'] == 'you_win' ? "green" : "darkred";
+                
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 6000);
+                break;
+            default:
+                console.log(json);
+                break;
+        }
+    }; 
+
+    let content = document.getElementsByClassName("cookierace-content")[0];
+    
+
+    function OnCookieClick() {
+        count += 1;
+        ws.send(JSON.stringify({"event":"click"}));
+        let countTextElement = document.getElementById("cookierace-click-count");
+        countTextElement.innerText = count.toString();
+    }
+
+    function Page_WipeContent() {
+        for (let i = 0; i < content.children.length; undefined) {
+            content.removeChild(content.children[0]);
+        }
+    }
+
+    function Page_LoadGameScreen() {
+
+        Page_WipeContent();
+
+        let cookie_button_div = document.createElement("div");
+        let cookie_img = document.createElement("img");
+
+        cookie_button_div.id = "cookierace-cookie-button";
+        cookie_button_div.className = "cookierace-cookie-button";
+        cookie_button_div.onclick = (event) => {
+            OnCookieClick();
+        };
+
+        cookie_img.src = "static/assets/cookie.png";
+        cookie_button_div.appendChild(cookie_img);
+
+        let cookie_click_count = document.createElement("a");
+        cookie_click_count.id = "cookierace-click-count";
+        cookie_click_count.className = "cookierace-click-count";
+        cookie_click_count.innerText = count.toString();
+
+        let cookie_msg_code = document.createElement("code");
+        cookie_msg_code.id = "cookierace-msg";
+        cookie_msg_code.style.marginTop = "50px";
+        cookie_msg_code.style.fontSize = "30px";
+
+        content.appendChild(cookie_button_div);
+        content.appendChild(cookie_click_count);
+        content.appendChild(cookie_msg_code);
+    }
+
+    function Page_LoadWaitingScreen() {
+        Page_WipeContent();
+
+        let cookierace_wait_msg = document.createElement("code");
+        cookierace_wait_msg.id = "cookierace-waiting-message";
+        cookierace_wait_msg.innerText = "Waiting for players...";
+
+        content.appendChild(cookierace_wait_msg);
+    }
+
+    Page_LoadWaitingScreen();
+
+    
+</script>
+
+</html>

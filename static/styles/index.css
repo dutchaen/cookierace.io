@@ -1,0 +1,36 @@
+body {
+    background-color: wheat;
+}
+
+.cookierace-content {
+    margin-top: 200px;
+}
+
+.cookierace-cookie-button:hover {
+    cursor: pointer;
+}
+
+.cookierace-cookie-button:active {
+    opacity: 80%;
+}
+
+.cookierace-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cookierace-cookie-button img {
+    width: 150px;
+    height: 150px;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.cookierace-click-count {
+    font-family: 'Consolas';
+    font-size: 22px;
+}
